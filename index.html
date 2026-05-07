@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📦 配件庫存管理系統</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F5F7;--surface:#fff;--surface2:#F5F5F7;
+  --border:#D1D1D6;--border2:#E5E5EA;
+  --text:#1C1C1E;--text2:#636366;--text3:#AEAEB2;
+  --blue:#0071E3;--blue-light:#E8F0FE;
+  --red:#FF3B30;--orange:#FF9500;--yellow:#FFCC00;--green:#34C759;--grey:#8E8E93;
+  --radius:10px;--radius-sm:7px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.1);
+}
+body{font-family:-apple-system,'PingFang TC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+button,input,select{font-family:inherit;cursor:pointer;border:none;outline:none}
+.topbar{background:rgba(255,255,255,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 24px;height:52px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.topbar-logo{font-size:17px;font-weight:700}
+.topbar-logo span{color:var(--blue)}
+.topbar-spacer{flex:1}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+.main{max-width:1440px;margin:0 auto;padding:20px 24px}
+.summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-sm);border:1px solid var(--border2);cursor:pointer;transition:transform .15s,box-shadow .15s;border-top:4px solid currentColor}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.stat-card.active{box-shadow:0 0 0 2px currentColor,var(--shadow)}
+.stat-card .num{font-size:30px;font-weight:700;line-height:1}
+.stat-card .label{font-size:11px;color:var(--text2);margin-top:4px}
+.stat-card .sub{font-size:10px;color:var(--text3)}
+.stat-card.red   {color:var(--red)}
+.stat-card.orange{color:var(--orange)}
+.stat-card.yellow{color:#B8860B}
+.stat-card.green {color:#1B9E3E}
+.stat-card.grey  {color:var(--grey)}
+.upload-section{background:var(--surface);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow-sm);border:1px solid var(--border2);margin-bottom:20px}
+.upload-section h3{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;transition:all .2s;position:relative;cursor:pointer;min-height:100px}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-light)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone .uz-icon{font-size:26px;margin-bottom:6px}
+.upload-zone .uz-title{font-weight:600;font-size:13px;margin-bottom:4px}
+.upload-zone .uz-sub{font-size:11px;color:var(--text2);line-height:1.5}
+.upload-zone.loaded{border-color:var(--green);background:#EDFBF1;border-style:solid}
+.process-row{margin-top:12px;display:flex;gap:8px;align-items:center}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.search-box{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px}
+.search-box input{border:none;background:none;font-size:13px;color:var(--text);width:180px}
+.search-box input::placeholder{color:var(--text3)}
+select.filter-sel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;cursor:pointer;border:none}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:#0062C4}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{background:var(--surface2)}
+.btn-orange{background:var(--orange);color:#fff}.btn-orange:hover{background:#E08600}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.table-wrap{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border2);box-shadow:var(--shadow-sm);overflow:hidden}
+.table-container{overflow:auto;max-height:calc(100vh - 360px);min-height:200px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:#F5F5F7;position:sticky;top:0;z-index:10;padding:8px 10px;text-align:left;font-weight:600;font-size:11px;color:var(--text2);white-space:nowrap;border-bottom:1px solid var(--border2);cursor:pointer;user-select:none}
+thead th:hover{background:#EBEBED}
+tbody tr{border-bottom:1px solid var(--border2)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(0,0,0,.02)}
+tbody td{padding:7px 10px;vertical-align:middle}
+.row-urgent {background:#FFF0F0}
+.row-suggest{background:#FFF7EE}
+.row-watch  {background:#FFFDF0}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge-urgent {background:#FF3B30;color:#fff}
+.badge-suggest{background:#FF9500;color:#fff}
+.badge-watch  {background:#FFCC00;color:#333}
+.badge-ok     {background:#34C759;color:#fff}
+.badge-none   {background:#E5E5EA;color:#636366}
+.stock-edit{width:60px;padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-size:12px;text-align:right;background:var(--surface);color:var(--text);cursor:text}
+.stock-edit:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,113,227,.15);outline:none}
+.col-num{text-align:right;font-variant-numeric:tabular-nums}
+.col-center{text-align:center}
+.text-muted{color:var(--text3)}
+.urgent-num{color:var(--red);font-weight:700}
+.col-name{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:14px;padding:24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);transform:scale(.96);transition:transform .2s}
+.modal-overlay.show .modal{transform:scale(1)}
+.modal h3{font-size:17px;font-weight:600;margin-bottom:16px}
+.form-row{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.form-row label{font-size:12px;font-weight:500;color:var(--text2)}
+.form-row input,.form-row select{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--text)}
+.form-row input:focus,.form-row select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,113,227,.15);outline:none}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1C1C1E;color:#fff;padding:10px 16px;border-radius:var(--radius-sm);font-size:13px;box-shadow:var(--shadow);animation:toast-in .3s ease;max-width:320px;pointer-events:none}
+.toast.success{background:#1B9E3E}
+.toast.error{background:var(--red)}
+@keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state .es-icon{font-size:48px;margin-bottom:12px}
+.empty-state h4{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px}
+.changelog{background:var(--surface);border-radius:var(--radius);padding:16px 20px;border:1px solid var(--border2);box-shadow:var(--shadow-sm);margin-top:16px}
+.changelog h3{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.cl-entry{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--border2);font-size:12px}
+.cl-entry:last-child{border-bottom:none}
+.cl-time{color:var(--text3);min-width:90px}
+.info-bar{background:linear-gradient(135deg,#E8F0FE,#F0F9FF);border:1px solid #BFD7F5;border-radius:var(--radius);padding:12px 18px;margin-bottom:20px;font-size:12px;line-height:1.8;color:#1C3C6E}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.row-count{font-size:11px;color:var(--text2);margin-left:4px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">📦 <span>配件庫存</span>管理系統</div>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-actions">
+    <button class="btn btn-secondary btn-sm" onclick="openCalSettings()">⚙️ 行事曆設定</button>
+    <button class="btn btn-orange btn-sm" onclick="downloadICS()" id="btn-ics" disabled>📅 下載 .ics（週三）</button>
+    <button class="btn btn-primary btn-sm" onclick="exportExcel()" id="btn-xlsx" disabled>⬇ 匯出 Excel</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="info-bar">
+    💡 <strong>使用方法：</strong>
+    ① 上傳最新銷售 XLS（含 item_date / item_item_no / item_sale_qty 欄位）
+    ② 上傳最新庫存 XLS（含 comp_item_no / comp_stk_qty 欄位）
+    ③ 點「計算庫存水位」— 或直接在表格修改庫存數量即時重算
+    ④ 下載 <strong>.ics</strong>（預設每週三 09:00 提醒，可在行事曆設定更改）/ 下載 <strong>Excel</strong>
+  </div>
+
+  <div class="summary-grid">
+    <div class="stat-card red"    id="card-urgent"  onclick="filterByStatus('urgent')">
+      <div class="num" id="num-urgent">—</div><div class="label">🔴 緊急補貨</div><div class="sub">庫存 &lt; 14 天</div>
+    </div>
+    <div class="stat-card orange" id="card-suggest" onclick="filterByStatus('suggest')">
+      <div class="num" id="num-suggest">—</div><div class="label">🟠 建議補貨</div><div class="sub">庫存 14–30 天</div>
+    </div>
+    <div class="stat-card yellow" id="card-watch"   onclick="filterByStatus('watch')">
+      <div class="num" id="num-watch">—</div><div class="label">🟡 注意水位</div><div class="sub">庫存 30–60 天</div>
+    </div>
+    <div class="stat-card green"  id="card-ok"      onclick="filterByStatus('ok')">
+      <div class="num" id="num-ok">—</div><div class="label">🟢 庫存充足</div><div class="sub">庫存 &gt; 60 天</div>
+    </div>
+    <div class="stat-card grey"   id="card-none"    onclick="filterByStatus('none')">
+      <div class="num" id="num-none">—</div><div class="label">⬜ 無銷售記錄</div><div class="sub">期間無出售</div>
+    </div>
+  </div>
+
+  <div class="upload-section">
+    <h3>📂 更新資料來源</h3>
+    <div class="upload-grid">
+      <div class="upload-zone" id="zone-sales" ondragover="onDrag(event,'sales')" ondragleave="offDrag('sales')" ondrop="onDrop(event,'sales')">
+        <input type="file" accept=".xls,.xlsx" onchange="handleFile(event,'sales')">
+        <div class="uz-icon">📊</div>
+        <div class="uz-title">銷售資料 XLS / XLSX</div>
+        <div class="uz-sub" id="sub-sales">拖放或點擊上傳<br>需含：item_date、item_item_no、item_sale_qty</div>
+      </div>
+      <div class="upload-zone" id="zone-inv" ondragover="onDrag(event,'inv')" ondragleave="offDrag('inv')" ondrop="onDrop(event,'inv')">
+        <input type="file" accept=".xls,.xlsx" onchange="handleFile(event,'inv')">
+        <div class="uz-icon">🗄️</div>
+        <div class="uz-title">現有庫存 XLS / XLSX</div>
+        <div class="uz-sub" id="sub-inv">拖放或點擊上傳<br>需含：comp_item_no、comp_stk_qty</div>
+      </div>
+    </div>
+    <div class="process-row">
+      <button class="btn btn-primary" onclick="processData()" id="btn-process" disabled>
+        <span class="spinner" id="process-spinner" style="display:none"></span>
+        ⚙️ 計算庫存水位
+      </button>
+      <button class="btn btn-secondary" onclick="loadLastSession()" style="margin-left:4px">🔄 載入上次資料</button>
+      <span id="last-update" style="font-size:11px;color:var(--text3);margin-left:10px"></span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <span style="color:var(--text3)">🔍</span>
+      <input type="text" id="search-input" placeholder="搜尋商品名稱、編號、品牌…" oninput="applyFilters()">
+    </div>
+    <select class="filter-sel" id="filter-cat" onchange="applyFilters()">
+      <option value="">全部品類</option>
+    </select>
+    <select class="filter-sel" id="filter-status" onchange="applyFilters()">
+      <option value="">全部狀態</option>
+      <option value="urgent">🔴 緊急補貨</option>
+      <option value="suggest">🟠 建議補貨</option>
+      <option value="watch">🟡 注意水位</option>
+      <option value="ok">🟢 庫存充足</option>
+      <option value="none">⬜ 無銷售記錄</option>
+    </select>
+    <button class="btn btn-secondary btn-sm" onclick="resetFilters()">✕ 清除</button>
+    <span class="row-count" id="row-count"></span>
+  </div>
+
+  <div class="table-wrap">
+    <div id="table-container" class="table-container">
+      <div class="empty-state" id="empty-state">
+        <div class="es-icon">📦</div>
+        <h4>尚未載入資料</h4>
+        <p>請上傳銷售 + 庫存 XLS，點擊「計算庫存水位」<br>或點「載入上次資料」恢復上次工作階段</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="changelog" id="changelog" style="display:none">
+    <h3>📝 本次編輯記錄</h3>
+    <div id="changelog-list"></div>
+  </div>
+
+</div>
+
+<!-- Calendar Modal -->
+<div class="modal-overlay" id="cal-modal">
+  <div class="modal">
+    <h3>⚙️ 行事曆通知設定</h3>
+    <div class="form-row">
+      <label>每週提醒日</label>
+      <select id="cal-day">
+        <option value="MO">週一（Monday）</option>
+        <option value="TU">週二（Tuesday）</option>
+        <option value="WE" selected>週三（Wednesday）✓ 預設</option>
+        <option value="TH">週四（Thursday）</option>
+        <option value="FR">週五（Friday）</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>提醒時間</label>
+      <input type="time" id="cal-time" value="09:00">
+    </div>
+    <div class="form-row">
+      <label>行事曆事件標題</label>
+      <input type="text" id="cal-title" value="📦 配件庫存檢查 & 補貨發信">
+    </div>
+    <div class="form-row">
+      <label>提前提醒（分鐘，0 = 不提醒）</label>
+      <input type="number" id="cal-alarm" value="30" min="0" max="1440">
+    </div>
+    <p style="font-size:11px;color:var(--text2);margin-top:4px">下載後在 iPhone「檔案 App」點開 .ics 即可訂閱，每週自動循環。</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('cal-modal')">取消</button>
+      <button class="btn btn-primary" onclick="saveCalSettings()">💾 儲存並下載 .ics</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────
+const state = {
+  salesRows:[], invRows:[], computed:[], filtered:[],
+  sortedMonths:[], sortCol:null, sortAsc:true,
+  filterStatus:'',
+  calSettings:{day:'WE',time:'09:00',title:'📦 配件庫存檢查 & 補貨發信',alarm:30}
+};
+let changelog = [];
+
+// ── File handling ─────────────────────────────────────────────────
+function onDrag(e,z){e.preventDefault();document.getElementById('zone-'+z).classList.add('drag')}
+function offDrag(z){document.getElementById('zone-'+z).classList.remove('drag')}
+function onDrop(e,z){e.preventDefault();offDrag(z);if(e.dataTransfer.files[0])processFile(e.dataTransfer.files[0],z)}
+function handleFile(e,z){if(e.target.files[0])processFile(e.target.files[0],z)}
+
+function processFile(file, zone) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, {type:'array', raw:false, cellText:true, dateNF:'YYYY/MM/DD', codepage:950});
+      const sh = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sh, {raw:false, defval:''});
+      if(!rows.length) throw new Error('檔案為空或無法讀取');
+      if(zone==='sales'){
+        state.salesRows=rows;
+        document.getElementById('zone-sales').classList.add('loaded');
+        document.getElementById('sub-sales').textContent=`✅ ${file.name}（${rows.length.toLocaleString()} 筆）`;
+        toast(`銷售資料已載入：${rows.length.toLocaleString()} 筆`,'success');
+      } else {
+        state.invRows=rows;
+        document.getElementById('zone-inv').classList.add('loaded');
+        document.getElementById('sub-inv').textContent=`✅ ${file.name}（${rows.length.toLocaleString()} 筆）`;
+        toast(`庫存資料已載入：${rows.length.toLocaleString()} 筆`,'success');
+      }
+      if(state.salesRows.length&&state.invRows.length)
+        document.getElementById('btn-process').disabled=false;
+    } catch(err){toast('解析失敗：'+err.message,'error');console.error(err)}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── Core compute ──────────────────────────────────────────────────
+function processData() {
+  if(!state.salesRows.length||!state.invRows.length){toast('請先上傳兩個 XLS 檔案','error');return}
+  document.getElementById('process-spinner').style.display='inline-block';
+  document.getElementById('btn-process').disabled=true;
+  setTimeout(()=>{
+    try{
+      _doProcess();
+      document.getElementById('process-spinner').style.display='none';
+      document.getElementById('btn-process').disabled=false;
+      document.getElementById('btn-xlsx').disabled=false;
+      document.getElementById('btn-ics').disabled=false;
+      saveSession();
+      toast('✅ 庫存水位計算完成！','success');
+    }catch(err){
+      document.getElementById('process-spinner').style.display='none';
+      document.getElementById('btn-process').disabled=false;
+      toast('計算失敗：'+err.message,'error');
+      console.error(err);
+    }
+  },50);
+}
+
+function findKey(obj, names) {
+  const keys=Object.keys(obj);
+  for(const n of names){
+    const f=keys.find(k=>k.trim().toLowerCase()===n.toLowerCase());
+    if(f)return f;
+  }
+  for(const n of names){
+    const f=keys.find(k=>k.trim().toLowerCase().includes(n.toLowerCase())||n.toLowerCase().includes(k.trim().toLowerCase()));
+    if(f)return f;
+  }
+  return null;
+}
+
+function _doProcess() {
+  const sample=state.salesRows[0]||{};
+  const c_no  =findKey(sample,['item_item_no','item_no','itemno','zitem_item_no']);
+  const c_qty =findKey(sample,['item_sale_qty','sale_qty','qty','item_qty']);
+  const c_date=findKey(sample,['item_date','date','sale_date','saledate']);
+  const c_nam =findKey(sample,['it01_item_nam','item_nam','item_name','name']);
+  if(!c_no||!c_qty) throw new Error(`銷售檔欄位未找到。偵測欄位：${Object.keys(sample).slice(0,8).join(', ')}`);
+
+  const salesMap={};
+  const monthsSet=new Set();
+  for(const row of state.salesRows){
+    const no=String(row[c_no]||'').trim();
+    if(!no)continue;
+    const qty=parseFloat(row[c_qty])||0;
+    const ds=String(row[c_date]||'');
+    let month=null;
+    const m=ds.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    if(m)month=parseInt(m[2]);
+    if(!salesMap[no])salesMap[no]={total:0,months:{},name:''};
+    salesMap[no].total+=qty;
+    if(month){salesMap[no].months[month]=(salesMap[no].months[month]||0)+qty;monthsSet.add(month)}
+    if(!salesMap[no].name&&c_nam)salesMap[no].name=String(row[c_nam]||'').trim();
+  }
+  const sortedMonths=Array.from(monthsSet).sort((a,b)=>a-b);
+  const N=Math.max(sortedMonths.length,1);
+
+  const isample=state.invRows[0]||{};
+  const ci_no  =findKey(isample,['comp_item_no','item_no','itemno']);
+  const ci_nam =findKey(isample,['comp_item_nam','item_nam','item_name','name']);
+  const ci_cat =findKey(isample,['comp_desc_c','desc_c','category','cat','comp_desc']);
+  const ci_stk =findKey(isample,['comp_stk_qty','stk_qty','stock','qty','stock_qty','comp_onhand_qty']);
+  const ci_px  =findKey(isample,['comp_sale_px','sale_px','price','px']);
+  const ci_mk  =findKey(isample,['comp_mk_dec','mk_dec','brand','mk']);
+  const ci_spec=findKey(isample,['comp_spec','spec']);
+  if(!ci_no||!ci_stk) throw new Error(`庫存檔欄位未找到。偵測欄位：${Object.keys(isample).slice(0,8).join(', ')}`);
+
+  const invMap={};
+  for(const row of state.invRows){
+    const no=String(row[ci_no]||'').trim();
+    if(!no)continue;
+    invMap[no]={
+      name:String(row[ci_nam]||'').trim(),
+      cat :String(row[ci_cat]||'').trim(),
+      brand:String(row[ci_mk]||'').trim(),
+      spec:String(row[ci_spec]||'').trim(),
+      stk :parseFloat(row[ci_stk])||0,
+      px  :parseFloat(row[ci_px])||0,
+    };
+  }
+
+  const cats=new Set();
+  const result=[];
+  for(const[no,inv]of Object.entries(invMap)){
+    const s=salesMap[no]||{total:0,months:{}};
+    const avg_mo=s.total/N;
+    const avg_wk=avg_mo/4.33;
+    const stk=inv.stk;
+    const days=avg_mo>0?Math.round((stk/avg_mo)*30):null;
+    const safety=Math.round(avg_wk*2*10)/10;
+    const reorder=avg_mo>0?Math.round(avg_mo*1.5):null;
+    let status,level;
+    if(s.total===0){status='none';level=0}
+    else if(days!==null&&days<=14){status='urgent';level=3}
+    else if(days!==null&&days<=30){status='suggest';level=2}
+    else if(days!==null&&days<=60){status='watch';level=1}
+    else{status='ok';level=0}
+    const mCols={};
+    for(const m of sortedMonths)mCols[m]=s.months[m]||0;
+    if(inv.cat)cats.add(inv.cat);
+    result.push({no,name:inv.name||s.name,cat:inv.cat,brand:inv.brand,spec:inv.spec,px:inv.px,
+      stk,months:mCols,total:s.total,avg_mo:Math.round(avg_mo*10)/10,avg_wk:Math.round(avg_wk*10)/10,
+      days,safety,reorder,status,level});
+  }
+  result.sort((a,b)=>-a.level+b.level||(a.cat||'').localeCompare(b.cat||'')||a.no.localeCompare(b.no));
+  state.computed=result;state.filtered=[...result];state.sortedMonths=sortedMonths;
+
+  const catSel=document.getElementById('filter-cat');
+  catSel.innerHTML='<option value="">全部品類</option>';
+  Array.from(cats).sort().forEach(c=>{catSel.innerHTML+=`<option value="${esc(c)}">${esc(c)}</option>`});
+  document.getElementById('last-update').textContent='最後更新：'+new Date().toLocaleString('zh-TW');
+  updateCards();renderTable();
+}
+
+// ── Inline edit ───────────────────────────────────────────────────
+function editStock(no,val) {
+  const qty=parseFloat(val);if(isNaN(qty))return;
+  const item=state.computed.find(r=>r.no===no);if(!item)return;
+  const old=item.stk;item.stk=qty;
+  const avg_mo=item.avg_mo;
+  item.days=avg_mo>0?Math.round((qty/avg_mo)*30):null;
+  item.reorder=avg_mo>0?Math.round(avg_mo*1.5):null;
+  if(item.total===0)item.status='none';
+  else if(item.days!==null&&item.days<=14)item.status='urgent';
+  else if(item.days!==null&&item.days<=30)item.status='suggest';
+  else if(item.days!==null&&item.days<=60)item.status='watch';
+  else item.status='ok';
+  item.level={none:0,ok:0,watch:1,suggest:2,urgent:3}[item.status];
+  changelog.unshift({time:new Date().toLocaleTimeString('zh-TW'),text:`${no} ${item.name.slice(0,20)} 庫存 ${old} → ${qty}`});
+  if(changelog.length>50)changelog.pop();
+  renderChangelog();updateCards();
+  // Patch row in DOM without full re-render
+  const tr=document.getElementById('tr-'+no.replace(/[^a-zA-Z0-9]/g,'_'));
+  if(tr){
+    tr.className='row-'+item.status;
+    const sc=tr.querySelector('.status-cell');if(sc)sc.innerHTML=badge(item.status);
+    const dc=tr.querySelector('.days-cell');if(dc)dc.innerHTML=daysHtml(item.days,item.status);
+    const rc=tr.querySelector('.reorder-cell');if(rc)rc.textContent=item.reorder!=null?item.reorder:'—';
+  }
+}
+
+// ── Render table ──────────────────────────────────────────────────
+function renderTable() {
+  const ms=state.sortedMonths;
+  const ml={1:'1月',2:'2月',3:'3月',4:'4月',5:'5月',6:'6月',7:'7月',8:'8月',9:'9月',10:'10月',11:'11月',12:'12月'};
+  let h=`<table><thead><tr>
+    <th onclick="sortBy('no')">商品編號 ↕</th>
+    <th onclick="sortBy('name')">商品名稱 ↕</th>
+    <th onclick="sortBy('cat')">品類 ↕</th>
+    <th class="col-num" onclick="sortBy('stk')">現有庫存 ↕</th>`;
+  for(const m of ms)h+=`<th class="col-num" onclick="sortBy('m${m}')">${ml[m]||m+'月'} ↕</th>`;
+  h+=`<th class="col-num" onclick="sortBy('total')">合計 ↕</th>
+    <th class="col-num" onclick="sortBy('avg_mo')">月均 ↕</th>
+    <th class="col-num" onclick="sortBy('days')">剩餘天 ↕</th>
+    <th class="col-num" onclick="sortBy('reorder')">補貨量 ↕</th>
+    <th class="col-center" onclick="sortBy('status')">狀態 ↕</th>
+  </tr></thead><tbody>`;
+  for(const r of state.filtered){
+    const tid='tr-'+r.no.replace(/[^a-zA-Z0-9]/g,'_');
+    h+=`<tr id="${tid}" class="row-${r.status}">
+      <td class="text-muted" style="font-family:monospace;font-size:11px">${esc(r.no)}</td>
+      <td class="col-name" title="${esc(r.name)}">${esc(r.name)}</td>
+      <td class="col-center text-muted">${esc(r.cat)}</td>
+      <td class="col-num"><input type="number" class="stock-edit" value="${r.stk}" step="1"
+        onchange="editStock('${r.no.replace(/'/g,"\\'")}',this.value)" onclick="this.select()"></td>`;
+    for(const m of ms){const v=r.months[m]||0;h+=`<td class="col-num ${v===0?'text-muted':''}">${v===0?'—':v}</td>`}
+    h+=`<td class="col-num">${r.total===0?'<span class="text-muted">—</span>':r.total}</td>
+      <td class="col-num">${r.avg_mo===0?'<span class="text-muted">—</span>':r.avg_mo}</td>
+      <td class="col-num days-cell">${daysHtml(r.days,r.status)}</td>
+      <td class="col-num reorder-cell">${r.reorder!=null?r.reorder:'<span class="text-muted">—</span>'}</td>
+      <td class="col-center status-cell">${badge(r.status)}</td></tr>`;
+  }
+  h+='</tbody></table>';
+  document.getElementById('table-container').innerHTML=h;
+  document.getElementById('row-count').textContent=`顯示 ${state.filtered.length} / ${state.computed.length} 筆`;
+}
+
+function badge(s){const m={urgent:['badge-urgent','🔴 緊急'],suggest:['badge-suggest','🟠 建議'],watch:['badge-watch','🟡 注意'],ok:['badge-ok','🟢 充足'],none:['badge-none','— 無記錄']};const[c,t]=m[s]||['badge-none','—'];return`<span class="badge ${c}">${t}</span>`}
+function daysHtml(d,s){if(d===null)return'<span class="text-muted">—</span>';return`<span class="${s==='urgent'?'urgent-num':''}">${d}</span>`}
+
+// ── Sort & Filter ─────────────────────────────────────────────────
+function sortBy(col){
+  if(state.sortCol===col)state.sortAsc=!state.sortAsc;else{state.sortCol=col;state.sortAsc=true}
+  state.filtered.sort((a,b)=>{
+    let va,vb;
+    if(col.startsWith('m')&&col.length>1){const m=parseInt(col.slice(1));va=a.months[m]||0;vb=b.months[m]||0}
+    else{va=a[col]??'';vb=b[col]??''}
+    if(va===null)va=-Infinity;if(vb===null)vb=-Infinity;
+    if(typeof va==='string')return state.sortAsc?va.localeCompare(vb):vb.localeCompare(va);
+    return state.sortAsc?va-vb:vb-va;
+  });
+  renderTable();
+}
+function applyFilters(){
+  const q=document.getElementById('search-input').value.toLowerCase().trim();
+  const cat=document.getElementById('filter-cat').value;
+  const st=document.getElementById('filter-status').value||state.filterStatus;
+  state.filtered=state.computed.filter(r=>{
+    if(q&&!r.name.toLowerCase().includes(q)&&!r.no.toLowerCase().includes(q)&&!r.brand.toLowerCase().includes(q))return false;
+    if(cat&&r.cat!==cat)return false;
+    if(st&&r.status!==st)return false;
+    return true;
+  });
+  if(state.sortCol)sortBy(state.sortCol);else renderTable();
+}
+function filterByStatus(s){
+  if(state.filterStatus===s){state.filterStatus='';document.getElementById('filter-status').value='';document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active'))}
+  else{state.filterStatus=s;document.getElementById('filter-status').value=s;document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active'));document.getElementById('card-'+s)?.classList.add('active')}
+  applyFilters();
+}
+function resetFilters(){
+  state.filterStatus='';
+  document.getElementById('search-input').value='';document.getElementById('filter-cat').value='';document.getElementById('filter-status').value='';
+  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active'));
+  state.filtered=[...state.computed];renderTable();
+}
+function updateCards(){
+  const c={urgent:0,suggest:0,watch:0,ok:0,none:0};
+  for(const r of state.computed)c[r.status]++;
+  ['urgent','suggest','watch','ok','none'].forEach(k=>{document.getElementById('num-'+k).textContent=c[k]});
+}
+
+// ── Export ICS ────────────────────────────────────────────────────
+function openCalSettings(){showModal('cal-modal')}
+function saveCalSettings(){
+  state.calSettings={
+    day:document.getElementById('cal-day').value,
+    time:document.getElementById('cal-time').value,
+    title:document.getElementById('cal-title').value,
+    alarm:parseInt(document.getElementById('cal-alarm').value)||0
+  };
+  closeModal('cal-modal');downloadICS();
+}
+function downloadICS(){
+  const s=state.calSettings;
+  const dayMap={MO:'週一',TU:'週二',WE:'週三',TH:'週四',FR:'週五'};
+  const dayNum={MO:1,TU:2,WE:3,TH:4,FR:5};
+  let d=new Date();
+  const target=dayNum[s.day];
+  while(d.getDay()!==target)d.setDate(d.getDate()+1);
+  const[hh,mm]=s.time.split(':').map(Number);
+  const fmtDt=(dt,h,m)=>{const p=n=>String(n).padStart(2,'0');return`${dt.getFullYear()}${p(dt.getMonth()+1)}${p(dt.getDate())}T${p(h)}${p(m)}00`};
+  const dtS=fmtDt(d,hh,mm),dtE=fmtDt(d,hh+1,mm);
+  const now=new Date().toISOString().replace(/[-:.]/g,'').slice(0,15)+'Z';
+  const uid='inv-reorder-'+Date.now()+'@store';
+  const urgItems=state.computed.filter(r=>r.level>=2);
+  const urgList=urgItems.slice(0,8).map(r=>`${r.no} ${r.name.slice(0,18)}(${r.reorder||'?'}件)`).join('\\n');
+  const desc=`【每${dayMap[s.day]}補貨提醒】\\n\\n請專員執行：\\n1️⃣ 開啟庫存水位提醒 Excel\\n2️⃣ 查看緊急補貨清單\\n3️⃣ 依建議補貨量發信至各廠商\\n4️⃣ 更新補貨狀態\\n`+
+    (urgItems.length?`\\n📋 待補貨品項（${urgItems.length}件）：\\n${urgList}\\n`:'')
+    +`\\n📌 水位標準：🔴<14天 🟠 14-30天 🟡 30-60天 🟢>60天`;
+  const alarm=s.alarm>0?`\r\nBEGIN:VALARM\r\nTRIGGER:-PT${s.alarm}M\r\nACTION:DISPLAY\r\nDESCRIPTION:提醒：${s.title}\r\nEND:VALARM`:'';
+  const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Accessory Inv Mgmt//ZH-TW//\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:📦 配件補貨提醒\r\nX-WR-TIMEZONE:Asia/Taipei\r\nBEGIN:VTIMEZONE\r\nTZID:Asia/Taipei\r\nBEGIN:STANDARD\r\nDTSTART:19701025T020000\r\nTZNAME:CST\r\nTZOFFSETFROM:+0800\r\nTZOFFSETTO:+0800\r\nEND:STANDARD\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:${uid}\r\nDTSTAMP:${now}\r\nDTSTART;TZID=Asia/Taipei:${dtS}\r\nDTEND;TZID=Asia/Taipei:${dtE}\r\nRRULE:FREQ=WEEKLY;BYDAY=${s.day}\r\nSUMMARY:${s.title}\r\nDESCRIPTION:${desc}\r\nLOCATION:門市配件區\r\nPRIORITY:1\r\nSTATUS:CONFIRMED${alarm}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+  saveBlob(new Blob([ics],{type:'text/calendar;charset=utf-8'}),`每${dayMap[s.day]}補貨提醒_${s.time.replace(':','')}.ics`);
+  toast(`📅 已下載 .ics（每${dayMap[s.day]} ${s.time}）`,'success');
+}
+
+// ── Export Excel ──────────────────────────────────────────────────
+function exportExcel(){
+  if(!state.computed.length){toast('請先計算庫存水位','error');return}
+  const ms=state.sortedMonths;
+  const ml={1:'1月',2:'2月',3:'3月',4:'4月',5:'5月',6:'6月',7:'7月',8:'8月',9:'9月',10:'10月',11:'11月',12:'12月'};
+  const sl={urgent:'🔴 緊急補貨',suggest:'🟠 建議補貨',watch:'🟡 注意水位',ok:'🟢 庫存充足',none:'無銷售記錄'};
+  const hdr=['商品編號','商品名稱','品類','品牌','規格','售價','現有庫存',...ms.map(m=>ml[m]||m+'月'),'合計銷售','月均銷量','預估剩餘天數','建議補貨量','庫存狀態'];
+  const rows=state.computed.map(r=>[r.no,r.name,r.cat,r.brand,r.spec,r.px,r.stk,...ms.map(m=>r.months[m]||0),r.total,r.avg_mo,r.days!==null?r.days:'—',r.reorder!=null?r.reorder:'—',sl[r.status]]);
+  const urgRows=state.computed.filter(r=>r.level>=2).map(r=>[sl[r.status],r.no,r.name,r.cat,r.stk,r.avg_mo,r.days!==null?r.days:'—',r.reorder!=null?r.reorder:'—']);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hdr,...rows]),'庫存水位總覽');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['狀態','商品編號','商品名稱','品類','現有庫存','月均銷量','預估剩餘天數','建議補貨量'],...urgRows]),'緊急補貨清單');
+  const ts=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  XLSX.writeFile(wb,`配件庫存水位提醒_${ts}.xlsx`);
+  toast('📊 Excel 已下載','success');
+}
+
+// ── Changelog ─────────────────────────────────────────────────────
+function renderChangelog(){
+  const el=document.getElementById('changelog'),list=document.getElementById('changelog-list');
+  if(!changelog.length){el.style.display='none';return}
+  el.style.display='block';
+  list.innerHTML=changelog.slice(0,15).map(e=>`<div class="cl-entry"><span class="cl-time">${e.time}</span><span>${e.text}</span></div>`).join('');
+}
+
+// ── Session ───────────────────────────────────────────────────────
+function saveSession(){
+  try{localStorage.setItem('inv_session_v2',JSON.stringify({computed:state.computed,sortedMonths:state.sortedMonths,ts:new Date().toISOString()}))}catch(e){}
+}
+function loadLastSession(){
+  try{
+    const raw=localStorage.getItem('inv_session_v2');
+    if(!raw){toast('沒有找到上次資料','error');return}
+    const p=JSON.parse(raw);
+    state.computed=p.computed;state.filtered=[...p.computed];state.sortedMonths=p.sortedMonths||[];
+    const cats=new Set(p.computed.map(r=>r.cat).filter(Boolean));
+    const catSel=document.getElementById('filter-cat');
+    catSel.innerHTML='<option value="">全部品類</option>';
+    Array.from(cats).sort().forEach(c=>{catSel.innerHTML+=`<option value="${esc(c)}">${esc(c)}</option>`});
+    document.getElementById('last-update').textContent='載入：'+new Date(p.ts).toLocaleString('zh-TW');
+    updateCards();renderTable();
+    document.getElementById('btn-xlsx').disabled=false;document.getElementById('btn-ics').disabled=false;
+    toast('✅ 已載入上次工作階段','success');
+  }catch(e){toast('載入失敗：'+e.message,'error')}
+}
+
+// ── Modal ─────────────────────────────────────────────────────────
+function showModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)})});
+
+// ── Toast ─────────────────────────────────────────────────────────
+function toast(msg,type=''){
+  const el=document.createElement('div');el.className='toast '+type;el.textContent=msg;
+  document.getElementById('toast-container').prepend(el);
+  setTimeout(()=>el.remove(),3500);
+}
+
+// ── Utils ─────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function saveBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+
+// ── Init ──────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  try{
+    const raw=localStorage.getItem('inv_session_v2');
+    if(raw){
+      const p=JSON.parse(raw);
+      document.getElementById('last-update').textContent='上次儲存：'+new Date(p.ts).toLocaleString('zh-TW');
+      document.getElementById('empty-state').innerHTML=`
+        <div class="es-icon">💾</div><h4>找到上次工作階段</h4>
+        <p style="margin-bottom:12px">儲存於 ${new Date(p.ts).toLocaleString('zh-TW')}</p>
+        <button class="btn btn-primary" onclick="loadLastSession()">🔄 載入上次資料</button>`;
+    }
+  }catch(e){}
+});
+</script>
+</body>
+</html>
