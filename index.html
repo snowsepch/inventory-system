@@ -40,17 +40,19 @@ button,input,select{font-family:inherit;cursor:pointer;border:none;outline:none}
 .upload-section{background:var(--surface);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow-sm);border:1px solid var(--border2);margin-bottom:20px}
 .upload-section h3{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
 .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;transition:all .2s;position:relative;cursor:pointer;min-height:100px}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:20px 20px 16px;text-align:center;transition:all .2s;min-height:100px}
 .upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-light)}
-.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone.loaded{border-color:var(--green);background:#EDFBF1;border-style:solid}
 .upload-zone .uz-icon{font-size:26px;margin-bottom:6px}
 .upload-zone .uz-title{font-weight:600;font-size:13px;margin-bottom:4px}
-.upload-zone .uz-sub{font-size:11px;color:var(--text2);line-height:1.5}
-.upload-zone.loaded{border-color:var(--green);background:#EDFBF1;border-style:solid}
+.upload-zone .uz-sub{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:10px}
+.upload-zone input[type=file]{display:block;margin:0 auto;font-size:12px;color:var(--text2);cursor:pointer}
+.upload-zone input[type=file]::file-selector-button{padding:5px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);font-size:12px;font-family:-apple-system,'PingFang TC','Helvetica Neue',sans-serif;cursor:pointer;color:var(--text);margin-right:6px}
+.upload-zone input[type=file]::file-selector-button:hover{background:var(--surface2)}
 .process-row{margin-top:12px;display:flex;gap:8px;align-items:center}
 .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .search-box{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px}
-.search-box input{border:none;background:none;font-size:13px;color:var(--text);width:180px}
+.search-box input{border:none;background:none;font-size:13px;color:var(--text);width:180px;cursor:text}
 .search-box input::placeholder{color:var(--text3)}
 select.filter-sel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text)}
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;cursor:pointer;border:none}
@@ -91,7 +93,7 @@ tbody td{padding:7px 10px;vertical-align:middle}
 .modal h3{font-size:17px;font-weight:600;margin-bottom:16px}
 .form-row{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
 .form-row label{font-size:12px;font-weight:500;color:var(--text2)}
-.form-row input,.form-row select{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--text)}
+.form-row input,.form-row select{padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;color:var(--text);cursor:text}
 .form-row input:focus,.form-row select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,113,227,.15);outline:none}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
 .toast-container{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px}
@@ -111,6 +113,18 @@ tbody td{padding:7px 10px;vertical-align:middle}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 .row-count{font-size:11px;color:var(--text2);margin-left:4px}
+.email-tbl-wrap{border:1px solid var(--border2);border-radius:8px;overflow:auto;max-height:300px;margin:4px 0 12px}
+.email-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.email-tbl thead th{background:#F5F5F7;padding:7px 12px;font-weight:600;font-size:11px;color:var(--text2);text-align:left;border-bottom:2px solid var(--border2);white-space:nowrap;position:sticky;top:0;z-index:2}
+.email-tbl tbody td{padding:7px 12px;border-bottom:1px solid var(--border2);vertical-align:middle}
+.email-tbl tbody tr:last-child td{border-bottom:none}
+.email-tbl td[contenteditable]{outline:none;min-width:36px;cursor:text}
+.email-tbl td[contenteditable]:focus{background:#EBF4FF !important}
+.email-tbl .erow-urg td{background:#FFF0F0}
+.email-tbl .erow-sug td{background:#FFF7EE}
+.email-tbl .td-right{text-align:right}
+.eml-ta{width:100%;font-size:13px;font-family:-apple-system,'PingFang TC','Helvetica Neue',sans-serif;resize:vertical;border:1px solid var(--border);border-radius:8px;padding:9px 12px;background:var(--surface2);color:var(--text);line-height:1.6;cursor:text;outline:none}
+.eml-ta:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,113,227,.15)}
 </style>
 </head>
 <body>
@@ -121,6 +135,7 @@ tbody td{padding:7px 10px;vertical-align:middle}
   <div class="topbar-actions">
     <button class="btn btn-secondary btn-sm" onclick="openCalSettings()">⚙️ 行事曆設定</button>
     <button class="btn btn-orange btn-sm" onclick="downloadICS()" id="btn-ics" disabled>📅 下載 .ics（週三）</button>
+    <button class="btn btn-sm" style="background:#d63031;color:#fff" onclick="openReorderEmail()" id="btn-email" disabled>✉️ 補貨發信</button>
     <button class="btn btn-primary btn-sm" onclick="exportExcel()" id="btn-xlsx" disabled>⬇ 匯出 Excel</button>
   </div>
 </div>
@@ -129,10 +144,10 @@ tbody td{padding:7px 10px;vertical-align:middle}
 
   <div class="info-bar">
     💡 <strong>使用方法：</strong>
-    ① 上傳最新銷售 XLS（含 item_date / item_item_no / item_sale_qty 欄位）
-    ② 上傳最新庫存 XLS（含 comp_item_no / comp_stk_qty 欄位）
+    ① 點下方「選擇銷售檔案」上傳 XLS（含 item_date / item_item_no / item_sale_qty 欄位）
+    ② 點「選擇庫存檔案」上傳 XLS（含 comp_item_no / comp_stk_qty 欄位）
     ③ 點「計算庫存水位」— 或直接在表格修改庫存數量即時重算
-    ④ 下載 <strong>.ics</strong>（預設每週三 09:00 提醒，可在行事曆設定更改）/ 下載 <strong>Excel</strong>
+    ④ 下載 <strong>.ics</strong>（預設每週三 09:00 提醒）/ <strong>補貨發信</strong> / 下載 <strong>Excel</strong>
   </div>
 
   <div class="summary-grid">
@@ -157,16 +172,16 @@ tbody td{padding:7px 10px;vertical-align:middle}
     <h3>📂 更新資料來源</h3>
     <div class="upload-grid">
       <div class="upload-zone" id="zone-sales" ondragover="onDrag(event,'sales')" ondragleave="offDrag('sales')" ondrop="onDrop(event,'sales')">
-        <input type="file" accept=".xls,.xlsx" onchange="handleFile(event,'sales')">
         <div class="uz-icon">📊</div>
         <div class="uz-title">銷售資料 XLS / XLSX</div>
-        <div class="uz-sub" id="sub-sales">拖放或點擊上傳<br>需含：item_date、item_item_no、item_sale_qty</div>
+        <div class="uz-sub" id="sub-sales">拖放或點擊選擇檔案<br>需含：item_date、item_item_no、item_sale_qty</div>
+        <input type="file" accept=".xls,.xlsx" onchange="handleFile(event,'sales')">
       </div>
       <div class="upload-zone" id="zone-inv" ondragover="onDrag(event,'inv')" ondragleave="offDrag('inv')" ondrop="onDrop(event,'inv')">
-        <input type="file" accept=".xls,.xlsx" onchange="handleFile(event,'inv')">
         <div class="uz-icon">🗄️</div>
         <div class="uz-title">現有庫存 XLS / XLSX</div>
-        <div class="uz-sub" id="sub-inv">拖放或點擊上傳<br>需含：comp_item_no、comp_stk_qty</div>
+        <div class="uz-sub" id="sub-inv">拖放或點擊選擇檔案<br>需含：comp_item_no、comp_stk_qty</div>
+        <input type="file" accept=".xls,.xlsx" onchange="handleFile(event,'inv')">
       </div>
     </div>
     <div class="process-row">
@@ -250,10 +265,60 @@ tbody td{padding:7px 10px;vertical-align:middle}
   </div>
 </div>
 
+<!-- Reorder Email Modal -->
+<div class="modal-overlay" id="email-modal">
+  <div class="modal" style="max-width:720px;display:flex;flex-direction:column;max-height:90vh;padding:0">
+    <div style="padding:20px 24px 0;flex-shrink:0">
+      <h3>✉️ 補貨發信草稿</h3>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:16px 24px">
+      <div class="form-row">
+        <label>收件人 Email（可多位，逗號分隔）</label>
+        <input type="text" id="email-to" placeholder="supplier@example.com">
+      </div>
+      <div class="form-row">
+        <label>主旨</label>
+        <input type="text" id="email-subject">
+      </div>
+      <div class="form-row">
+        <label>開頭文字</label>
+        <textarea id="email-intro" rows="2" class="eml-ta"></textarea>
+      </div>
+      <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px">
+        補貨清單 <span style="font-weight:400;color:var(--text3)">（點擊任一欄位可直接編輯）</span>
+      </div>
+      <div class="email-tbl-wrap" style="max-height:220px">
+        <table class="email-tbl" id="email-reorder-tbl">
+          <thead>
+            <tr>
+              <th>貨號</th>
+              <th>品名</th>
+              <th style="text-align:right">現有數量</th>
+              <th style="text-align:right">需要數量</th>
+            </tr>
+          </thead>
+          <tbody id="email-tbl-body"></tbody>
+        </table>
+      </div>
+      <div class="form-row">
+        <label>結尾文字</label>
+        <textarea id="email-outro" rows="2" class="eml-ta"></textarea>
+      </div>
+    </div>
+    <div style="padding:12px 24px 20px;flex-shrink:0;border-top:1px solid var(--border2);background:var(--surface);border-radius:0 0 14px 14px">
+      <p style="font-size:11px;color:var(--text2);margin-bottom:10px">📋「複製 HTML」→ 貼入 Gmail / Outlook 可保留表格樣式。✉️「開啟郵件」為純文字格式。</p>
+      <div class="modal-actions" style="margin-top:0">
+        <button class="btn btn-secondary" onclick="closeModal('email-modal')">取消</button>
+        <button class="btn btn-secondary" onclick="copyEmailHtml()">📋 複製 HTML 表格</button>
+        <button class="btn btn-primary" style="background:#d63031" onclick="sendReorderEmail()">✉️ 開啟郵件</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toast-container"></div>
 
 <script>
-// ── State ────────────────────────────────────────────────────────
 const state = {
   salesRows:[], invRows:[], computed:[], filtered:[],
   sortedMonths:[], sortCol:null, sortAsc:true,
@@ -279,13 +344,13 @@ function processFile(file, zone) {
       if(zone==='sales'){
         state.salesRows=rows;
         document.getElementById('zone-sales').classList.add('loaded');
-        document.getElementById('sub-sales').textContent=`✅ ${file.name}（${rows.length.toLocaleString()} 筆）`;
-        toast(`銷售資料已載入：${rows.length.toLocaleString()} 筆`,'success');
+        document.getElementById('sub-sales').textContent='✅ '+file.name+'（'+rows.length.toLocaleString()+' 筆）';
+        toast('銷售資料已載入：'+rows.length.toLocaleString()+' 筆','success');
       } else {
         state.invRows=rows;
         document.getElementById('zone-inv').classList.add('loaded');
-        document.getElementById('sub-inv').textContent=`✅ ${file.name}（${rows.length.toLocaleString()} 筆）`;
-        toast(`庫存資料已載入：${rows.length.toLocaleString()} 筆`,'success');
+        document.getElementById('sub-inv').textContent='✅ '+file.name+'（'+rows.length.toLocaleString()+' 筆）';
+        toast('庫存資料已載入：'+rows.length.toLocaleString()+' 筆','success');
       }
       if(state.salesRows.length&&state.invRows.length)
         document.getElementById('btn-process').disabled=false;
@@ -299,13 +364,14 @@ function processData() {
   if(!state.salesRows.length||!state.invRows.length){toast('請先上傳兩個 XLS 檔案','error');return}
   document.getElementById('process-spinner').style.display='inline-block';
   document.getElementById('btn-process').disabled=true;
-  setTimeout(()=>{
+  setTimeout(function(){
     try{
       _doProcess();
       document.getElementById('process-spinner').style.display='none';
       document.getElementById('btn-process').disabled=false;
       document.getElementById('btn-xlsx').disabled=false;
       document.getElementById('btn-ics').disabled=false;
+      document.getElementById('btn-email').disabled=false;
       saveSession();
       toast('✅ 庫存水位計算完成！','success');
     }catch(err){
@@ -318,57 +384,60 @@ function processData() {
 }
 
 function findKey(obj, names) {
-  const keys=Object.keys(obj);
-  for(const n of names){
-    const f=keys.find(k=>k.trim().toLowerCase()===n.toLowerCase());
+  var keys=Object.keys(obj);
+  for(var i=0;i<names.length;i++){
+    var f=keys.find(function(k){return k.trim().toLowerCase()===names[i].toLowerCase()});
     if(f)return f;
   }
-  for(const n of names){
-    const f=keys.find(k=>k.trim().toLowerCase().includes(n.toLowerCase())||n.toLowerCase().includes(k.trim().toLowerCase()));
+  for(var i=0;i<names.length;i++){
+    var n=names[i];
+    var f=keys.find(function(k){return k.trim().toLowerCase().includes(n.toLowerCase())||n.toLowerCase().includes(k.trim().toLowerCase())});
     if(f)return f;
   }
   return null;
 }
 
 function _doProcess() {
-  const sample=state.salesRows[0]||{};
-  const c_no  =findKey(sample,['item_item_no','item_no','itemno','zitem_item_no']);
-  const c_qty =findKey(sample,['item_sale_qty','sale_qty','qty','item_qty']);
-  const c_date=findKey(sample,['item_date','date','sale_date','saledate']);
-  const c_nam =findKey(sample,['it01_item_nam','item_nam','item_name','name']);
-  if(!c_no||!c_qty) throw new Error(`銷售檔欄位未找到。偵測欄位：${Object.keys(sample).slice(0,8).join(', ')}`);
+  var sample=state.salesRows[0]||{};
+  var c_no  =findKey(sample,['item_item_no','item_no','itemno','zitem_item_no']);
+  var c_qty =findKey(sample,['item_sale_qty','sale_qty','qty','item_qty']);
+  var c_date=findKey(sample,['item_date','date','sale_date','saledate']);
+  var c_nam =findKey(sample,['it01_item_nam','item_nam','item_name','name']);
+  if(!c_no||!c_qty) throw new Error('銷售檔欄位未找到。偵測欄位：'+Object.keys(sample).slice(0,8).join(', '));
 
-  const salesMap={};
-  const monthsSet=new Set();
-  for(const row of state.salesRows){
-    const no=String(row[c_no]||'').trim();
+  var salesMap={};
+  var monthsSet=new Set();
+  for(var i=0;i<state.salesRows.length;i++){
+    var row=state.salesRows[i];
+    var no=String(row[c_no]||'').trim();
     if(!no)continue;
-    const qty=parseFloat(row[c_qty])||0;
-    const ds=String(row[c_date]||'');
-    let month=null;
-    const m=ds.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    var qty=parseFloat(row[c_qty])||0;
+    var ds=String(row[c_date]||'');
+    var month=null;
+    var m=ds.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
     if(m)month=parseInt(m[2]);
     if(!salesMap[no])salesMap[no]={total:0,months:{},name:''};
     salesMap[no].total+=qty;
     if(month){salesMap[no].months[month]=(salesMap[no].months[month]||0)+qty;monthsSet.add(month)}
     if(!salesMap[no].name&&c_nam)salesMap[no].name=String(row[c_nam]||'').trim();
   }
-  const sortedMonths=Array.from(monthsSet).sort((a,b)=>a-b);
-  const N=Math.max(sortedMonths.length,1);
+  var sortedMonths=Array.from(monthsSet).sort(function(a,b){return a-b});
+  var N=Math.max(sortedMonths.length,1);
 
-  const isample=state.invRows[0]||{};
-  const ci_no  =findKey(isample,['comp_item_no','item_no','itemno']);
-  const ci_nam =findKey(isample,['comp_item_nam','item_nam','item_name','name']);
-  const ci_cat =findKey(isample,['comp_desc_c','desc_c','category','cat','comp_desc']);
-  const ci_stk =findKey(isample,['comp_stk_qty','stk_qty','stock','qty','stock_qty','comp_onhand_qty']);
-  const ci_px  =findKey(isample,['comp_sale_px','sale_px','price','px']);
-  const ci_mk  =findKey(isample,['comp_mk_dec','mk_dec','brand','mk']);
-  const ci_spec=findKey(isample,['comp_spec','spec']);
-  if(!ci_no||!ci_stk) throw new Error(`庫存檔欄位未找到。偵測欄位：${Object.keys(isample).slice(0,8).join(', ')}`);
+  var isample=state.invRows[0]||{};
+  var ci_no  =findKey(isample,['comp_item_no','item_no','itemno']);
+  var ci_nam =findKey(isample,['comp_item_nam','item_nam','item_name','name']);
+  var ci_cat =findKey(isample,['comp_desc_c','desc_c','category','cat','comp_desc']);
+  var ci_stk =findKey(isample,['comp_stk_qty','stk_qty','stock','qty','stock_qty','comp_onhand_qty']);
+  var ci_px  =findKey(isample,['comp_sale_px','sale_px','price','px']);
+  var ci_mk  =findKey(isample,['comp_mk_dec','mk_dec','brand','mk']);
+  var ci_spec=findKey(isample,['comp_spec','spec']);
+  if(!ci_no||!ci_stk) throw new Error('庫存檔欄位未找到。偵測欄位：'+Object.keys(isample).slice(0,8).join(', '));
 
-  const invMap={};
-  for(const row of state.invRows){
-    const no=String(row[ci_no]||'').trim();
+  var invMap={};
+  for(var i=0;i<state.invRows.length;i++){
+    var row=state.invRows[i];
+    var no=String(row[ci_no]||'').trim();
     if(!no)continue;
     invMap[no]={
       name:String(row[ci_nam]||'').trim(),
@@ -380,45 +449,49 @@ function _doProcess() {
     };
   }
 
-  const cats=new Set();
-  const result=[];
-  for(const[no,inv]of Object.entries(invMap)){
-    const s=salesMap[no]||{total:0,months:{}};
-    const avg_mo=s.total/N;
-    const avg_wk=avg_mo/4.33;
-    const stk=inv.stk;
-    const days=avg_mo>0?Math.round((stk/avg_mo)*30):null;
-    const safety=Math.round(avg_wk*2*10)/10;
-    const reorder=avg_mo>0?Math.round(avg_mo*1.5):null;
-    let status,level;
+  var cats=new Set();
+  var result=[];
+  var entries=Object.entries(invMap);
+  for(var i=0;i<entries.length;i++){
+    var no=entries[i][0], inv=entries[i][1];
+    var s=salesMap[no]||{total:0,months:{}};
+    var avg_mo=s.total/N;
+    var avg_wk=avg_mo/4.33;
+    var stk=inv.stk;
+    var days=avg_mo>0?Math.round((stk/avg_mo)*30):null;
+    var safety=Math.round(avg_wk*2*10)/10;
+    var reorder=avg_mo>0?Math.round(avg_mo*1.5):null;
+    var status,level;
     if(s.total===0){status='none';level=0}
     else if(days!==null&&days<=14){status='urgent';level=3}
     else if(days!==null&&days<=30){status='suggest';level=2}
     else if(days!==null&&days<=60){status='watch';level=1}
     else{status='ok';level=0}
-    const mCols={};
-    for(const m of sortedMonths)mCols[m]=s.months[m]||0;
+    var mCols={};
+    for(var j=0;j<sortedMonths.length;j++)mCols[sortedMonths[j]]=s.months[sortedMonths[j]]||0;
+    var _n=(inv.name||s.name)+(inv.cat||'');
+    if(EXCLUDE_KEYWORDS.some(function(k){return _n.indexOf(k)>=0})) continue;
     if(inv.cat)cats.add(inv.cat);
-    result.push({no,name:inv.name||s.name,cat:inv.cat,brand:inv.brand,spec:inv.spec,px:inv.px,
-      stk,months:mCols,total:s.total,avg_mo:Math.round(avg_mo*10)/10,avg_wk:Math.round(avg_wk*10)/10,
-      days,safety,reorder,status,level});
+    result.push({no:no,name:inv.name||s.name,cat:inv.cat,brand:inv.brand,spec:inv.spec,px:inv.px,
+      stk:stk,months:mCols,total:s.total,avg_mo:Math.round(avg_mo*10)/10,avg_wk:Math.round(avg_wk*10)/10,
+      days:days,safety:safety,reorder:reorder,status:status,level:level});
   }
-  result.sort((a,b)=>-a.level+b.level||(a.cat||'').localeCompare(b.cat||'')||a.no.localeCompare(b.no));
-  state.computed=result;state.filtered=[...result];state.sortedMonths=sortedMonths;
+  result.sort(function(a,b){return(-a.level+b.level)||(a.cat||'').localeCompare(b.cat||'')||a.no.localeCompare(b.no)});
+  state.computed=result;state.filtered=result.slice();state.sortedMonths=sortedMonths;
 
-  const catSel=document.getElementById('filter-cat');
+  var catSel=document.getElementById('filter-cat');
   catSel.innerHTML='<option value="">全部品類</option>';
-  Array.from(cats).sort().forEach(c=>{catSel.innerHTML+=`<option value="${esc(c)}">${esc(c)}</option>`});
+  Array.from(cats).sort().forEach(function(c){catSel.innerHTML+='<option value="'+esc(c)+'">'+esc(c)+'</option>'});
   document.getElementById('last-update').textContent='最後更新：'+new Date().toLocaleString('zh-TW');
   updateCards();renderTable();
 }
 
 // ── Inline edit ───────────────────────────────────────────────────
 function editStock(no,val) {
-  const qty=parseFloat(val);if(isNaN(qty))return;
-  const item=state.computed.find(r=>r.no===no);if(!item)return;
-  const old=item.stk;item.stk=qty;
-  const avg_mo=item.avg_mo;
+  var qty=parseFloat(val);if(isNaN(qty))return;
+  var item=state.computed.find(function(r){return r.no===no});if(!item)return;
+  var old=item.stk;item.stk=qty;
+  var avg_mo=item.avg_mo;
   item.days=avg_mo>0?Math.round((qty/avg_mo)*30):null;
   item.reorder=avg_mo>0?Math.round(avg_mo*1.5):null;
   if(item.total===0)item.status='none';
@@ -427,65 +500,65 @@ function editStock(no,val) {
   else if(item.days!==null&&item.days<=60)item.status='watch';
   else item.status='ok';
   item.level={none:0,ok:0,watch:1,suggest:2,urgent:3}[item.status];
-  changelog.unshift({time:new Date().toLocaleTimeString('zh-TW'),text:`${no} ${item.name.slice(0,20)} 庫存 ${old} → ${qty}`});
+  changelog.unshift({time:new Date().toLocaleTimeString('zh-TW'),text:no+' '+item.name.slice(0,20)+' 庫存 '+old+' → '+qty});
   if(changelog.length>50)changelog.pop();
   renderChangelog();updateCards();
-  // Patch row in DOM without full re-render
-  const tr=document.getElementById('tr-'+no.replace(/[^a-zA-Z0-9]/g,'_'));
+  var tr=document.getElementById('tr-'+no.replace(/[^a-zA-Z0-9]/g,'_'));
   if(tr){
     tr.className='row-'+item.status;
-    const sc=tr.querySelector('.status-cell');if(sc)sc.innerHTML=badge(item.status);
-    const dc=tr.querySelector('.days-cell');if(dc)dc.innerHTML=daysHtml(item.days,item.status);
-    const rc=tr.querySelector('.reorder-cell');if(rc)rc.textContent=item.reorder!=null?item.reorder:'—';
+    var sc=tr.querySelector('.status-cell');if(sc)sc.innerHTML=badge(item.status);
+    var dc=tr.querySelector('.days-cell');if(dc)dc.innerHTML=daysHtml(item.days,item.status);
+    var rc=tr.querySelector('.reorder-cell');if(rc)rc.textContent=item.reorder!=null?item.reorder:'—';
   }
 }
 
 // ── Render table ──────────────────────────────────────────────────
 function renderTable() {
-  const ms=state.sortedMonths;
-  const ml={1:'1月',2:'2月',3:'3月',4:'4月',5:'5月',6:'6月',7:'7月',8:'8月',9:'9月',10:'10月',11:'11月',12:'12月'};
-  let h=`<table><thead><tr>
-    <th onclick="sortBy('no')">商品編號 ↕</th>
-    <th onclick="sortBy('name')">商品名稱 ↕</th>
-    <th onclick="sortBy('cat')">品類 ↕</th>
-    <th class="col-num" onclick="sortBy('stk')">現有庫存 ↕</th>`;
-  for(const m of ms)h+=`<th class="col-num" onclick="sortBy('m${m}')">${ml[m]||m+'月'} ↕</th>`;
-  h+=`<th class="col-num" onclick="sortBy('total')">合計 ↕</th>
-    <th class="col-num" onclick="sortBy('avg_mo')">月均 ↕</th>
-    <th class="col-num" onclick="sortBy('days')">剩餘天 ↕</th>
-    <th class="col-num" onclick="sortBy('reorder')">補貨量 ↕</th>
-    <th class="col-center" onclick="sortBy('status')">狀態 ↕</th>
-  </tr></thead><tbody>`;
-  for(const r of state.filtered){
-    const tid='tr-'+r.no.replace(/[^a-zA-Z0-9]/g,'_');
-    h+=`<tr id="${tid}" class="row-${r.status}">
-      <td class="text-muted" style="font-family:monospace;font-size:11px">${esc(r.no)}</td>
-      <td class="col-name" title="${esc(r.name)}">${esc(r.name)}</td>
-      <td class="col-center text-muted">${esc(r.cat)}</td>
-      <td class="col-num"><input type="number" class="stock-edit" value="${r.stk}" step="1"
-        onchange="editStock('${r.no.replace(/'/g,"\\'")}',this.value)" onclick="this.select()"></td>`;
-    for(const m of ms){const v=r.months[m]||0;h+=`<td class="col-num ${v===0?'text-muted':''}">${v===0?'—':v}</td>`}
-    h+=`<td class="col-num">${r.total===0?'<span class="text-muted">—</span>':r.total}</td>
-      <td class="col-num">${r.avg_mo===0?'<span class="text-muted">—</span>':r.avg_mo}</td>
-      <td class="col-num days-cell">${daysHtml(r.days,r.status)}</td>
-      <td class="col-num reorder-cell">${r.reorder!=null?r.reorder:'<span class="text-muted">—</span>'}</td>
-      <td class="col-center status-cell">${badge(r.status)}</td></tr>`;
+  var ms=state.sortedMonths;
+  var ml={1:'1月',2:'2月',3:'3月',4:'4月',5:'5月',6:'6月',7:'7月',8:'8月',9:'9月',10:'10月',11:'11月',12:'12月'};
+  var h='<table><thead><tr>'
+    +'<th onclick="sortBy(\'no\')">商品編號 ↕</th>'
+    +'<th onclick="sortBy(\'name\')">商品名稱 ↕</th>'
+    +'<th onclick="sortBy(\'cat\')">品類 ↕</th>'
+    +'<th class="col-num" onclick="sortBy(\'stk\')">現有庫存 ↕</th>';
+  for(var i=0;i<ms.length;i++)h+='<th class="col-num" onclick="sortBy(\'m'+ms[i]+'\')">'+(ml[ms[i]]||ms[i]+'月')+' ↕</th>';
+  h+='<th class="col-num" onclick="sortBy(\'total\')">合計 ↕</th>'
+    +'<th class="col-num" onclick="sortBy(\'avg_mo\')">月均 ↕</th>'
+    +'<th class="col-num" onclick="sortBy(\'days\')">剩餘天 ↕</th>'
+    +'<th class="col-num" onclick="sortBy(\'reorder\')">補貨量 ↕</th>'
+    +'<th class="col-center" onclick="sortBy(\'status\')">狀態 ↕</th>'
+    +'</tr></thead><tbody>';
+  for(var i=0;i<state.filtered.length;i++){
+    var r=state.filtered[i];
+    var tid='tr-'+r.no.replace(/[^a-zA-Z0-9]/g,'_');
+    h+='<tr id="'+tid+'" class="row-'+r.status+'">'
+      +'<td class="text-muted" style="font-family:monospace;font-size:11px">'+esc(r.no)+'</td>'
+      +'<td class="col-name" title="'+esc(r.name)+'">'+esc(r.name)+'</td>'
+      +'<td class="col-center text-muted">'+esc(r.cat)+'</td>'
+      +'<td class="col-num"><input type="number" class="stock-edit" value="'+r.stk+'" step="1"'
+      +' onchange="editStock(\''+r.no.replace(/'/g,"\\'")+"',this.value)\" onclick=\"this.select()\"></td>";
+    for(var j=0;j<ms.length;j++){var v=r.months[ms[j]]||0;h+='<td class="col-num '+(v===0?'text-muted':'')+'>'+(v===0?'—':v)+'</td>'}
+    h+='<td class="col-num">'+(r.total===0?'<span class="text-muted">—</span>':r.total)+'</td>'
+      +'<td class="col-num">'+(r.avg_mo===0?'<span class="text-muted">—</span>':r.avg_mo)+'</td>'
+      +'<td class="col-num days-cell">'+daysHtml(r.days,r.status)+'</td>'
+      +'<td class="col-num reorder-cell">'+(r.reorder!=null?r.reorder:'<span class="text-muted">—</span>')+'</td>'
+      +'<td class="col-center status-cell">'+badge(r.status)+'</td></tr>';
   }
   h+='</tbody></table>';
   document.getElementById('table-container').innerHTML=h;
-  document.getElementById('row-count').textContent=`顯示 ${state.filtered.length} / ${state.computed.length} 筆`;
+  document.getElementById('row-count').textContent='顯示 '+state.filtered.length+' / '+state.computed.length+' 筆';
 }
 
-function badge(s){const m={urgent:['badge-urgent','🔴 緊急'],suggest:['badge-suggest','🟠 建議'],watch:['badge-watch','🟡 注意'],ok:['badge-ok','🟢 充足'],none:['badge-none','— 無記錄']};const[c,t]=m[s]||['badge-none','—'];return`<span class="badge ${c}">${t}</span>`}
-function daysHtml(d,s){if(d===null)return'<span class="text-muted">—</span>';return`<span class="${s==='urgent'?'urgent-num':''}">${d}</span>`}
+function badge(s){var m={urgent:['badge-urgent','🔴 緊急'],suggest:['badge-suggest','🟠 建議'],watch:['badge-watch','🟡 注意'],ok:['badge-ok','🟢 充足'],none:['badge-none','— 無記錄']};var ct=m[s]||['badge-none','—'];return'<span class="badge '+ct[0]+'">'+ct[1]+'</span>'}
+function daysHtml(d,s){if(d===null)return'<span class="text-muted">—</span>';return'<span class="'+(s==='urgent'?'urgent-num':'')+'">'+d+'</span>'}
 
 // ── Sort & Filter ─────────────────────────────────────────────────
 function sortBy(col){
   if(state.sortCol===col)state.sortAsc=!state.sortAsc;else{state.sortCol=col;state.sortAsc=true}
-  state.filtered.sort((a,b)=>{
-    let va,vb;
-    if(col.startsWith('m')&&col.length>1){const m=parseInt(col.slice(1));va=a.months[m]||0;vb=b.months[m]||0}
-    else{va=a[col]??'';vb=b[col]??''}
+  state.filtered.sort(function(a,b){
+    var va,vb;
+    if(col.startsWith('m')&&col.length>1){var mn=parseInt(col.slice(1));va=a.months[mn]||0;vb=b.months[mn]||0}
+    else{va=a[col]!=null?a[col]:'';vb=b[col]!=null?b[col]:''}
     if(va===null)va=-Infinity;if(vb===null)vb=-Infinity;
     if(typeof va==='string')return state.sortAsc?va.localeCompare(vb):vb.localeCompare(va);
     return state.sortAsc?va-vb:vb-va;
@@ -493,10 +566,10 @@ function sortBy(col){
   renderTable();
 }
 function applyFilters(){
-  const q=document.getElementById('search-input').value.toLowerCase().trim();
-  const cat=document.getElementById('filter-cat').value;
-  const st=document.getElementById('filter-status').value||state.filterStatus;
-  state.filtered=state.computed.filter(r=>{
+  var q=document.getElementById('search-input').value.toLowerCase().trim();
+  var cat=document.getElementById('filter-cat').value;
+  var st=document.getElementById('filter-status').value||state.filterStatus;
+  state.filtered=state.computed.filter(function(r){
     if(q&&!r.name.toLowerCase().includes(q)&&!r.no.toLowerCase().includes(q)&&!r.brand.toLowerCase().includes(q))return false;
     if(cat&&r.cat!==cat)return false;
     if(st&&r.status!==st)return false;
@@ -505,20 +578,20 @@ function applyFilters(){
   if(state.sortCol)sortBy(state.sortCol);else renderTable();
 }
 function filterByStatus(s){
-  if(state.filterStatus===s){state.filterStatus='';document.getElementById('filter-status').value='';document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active'))}
-  else{state.filterStatus=s;document.getElementById('filter-status').value=s;document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active'));document.getElementById('card-'+s)?.classList.add('active')}
+  if(state.filterStatus===s){state.filterStatus='';document.getElementById('filter-status').value='';document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active')})}
+  else{state.filterStatus=s;document.getElementById('filter-status').value=s;document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active')});var el=document.getElementById('card-'+s);if(el)el.classList.add('active')}
   applyFilters();
 }
 function resetFilters(){
   state.filterStatus='';
   document.getElementById('search-input').value='';document.getElementById('filter-cat').value='';document.getElementById('filter-status').value='';
-  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active'));
-  state.filtered=[...state.computed];renderTable();
+  document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active')});
+  state.filtered=state.computed.slice();renderTable();
 }
 function updateCards(){
-  const c={urgent:0,suggest:0,watch:0,ok:0,none:0};
-  for(const r of state.computed)c[r.status]++;
-  ['urgent','suggest','watch','ok','none'].forEach(k=>{document.getElementById('num-'+k).textContent=c[k]});
+  var c={urgent:0,suggest:0,watch:0,ok:0,none:0};
+  for(var i=0;i<state.computed.length;i++)c[state.computed[i].status]++;
+  ['urgent','suggest','watch','ok','none'].forEach(function(k){document.getElementById('num-'+k).textContent=c[k]});
 }
 
 // ── Export ICS ────────────────────────────────────────────────────
@@ -533,51 +606,144 @@ function saveCalSettings(){
   closeModal('cal-modal');downloadICS();
 }
 function downloadICS(){
-  const s=state.calSettings;
-  const dayMap={MO:'週一',TU:'週二',WE:'週三',TH:'週四',FR:'週五'};
-  const dayNum={MO:1,TU:2,WE:3,TH:4,FR:5};
-  let d=new Date();
-  const target=dayNum[s.day];
+  var s=state.calSettings;
+  var dayMap={MO:'週一',TU:'週二',WE:'週三',TH:'週四',FR:'週五'};
+  var dayNum={MO:1,TU:2,WE:3,TH:4,FR:5};
+  var d=new Date();
+  var target=dayNum[s.day];
   while(d.getDay()!==target)d.setDate(d.getDate()+1);
-  const[hh,mm]=s.time.split(':').map(Number);
-  const fmtDt=(dt,h,m)=>{const p=n=>String(n).padStart(2,'0');return`${dt.getFullYear()}${p(dt.getMonth()+1)}${p(dt.getDate())}T${p(h)}${p(m)}00`};
-  const dtS=fmtDt(d,hh,mm),dtE=fmtDt(d,hh+1,mm);
-  const now=new Date().toISOString().replace(/[-:.]/g,'').slice(0,15)+'Z';
-  const uid='inv-reorder-'+Date.now()+'@store';
-  const urgItems=state.computed.filter(r=>r.level>=2);
-  const urgList=urgItems.slice(0,8).map(r=>`${r.no} ${r.name.slice(0,18)}(${r.reorder||'?'}件)`).join('\\n');
-  const desc=`【每${dayMap[s.day]}補貨提醒】\\n\\n請專員執行：\\n1️⃣ 開啟庫存水位提醒 Excel\\n2️⃣ 查看緊急補貨清單\\n3️⃣ 依建議補貨量發信至各廠商\\n4️⃣ 更新補貨狀態\\n`+
-    (urgItems.length?`\\n📋 待補貨品項（${urgItems.length}件）：\\n${urgList}\\n`:'')
-    +`\\n📌 水位標準：🔴<14天 🟠 14-30天 🟡 30-60天 🟢>60天`;
-  const alarm=s.alarm>0?`\r\nBEGIN:VALARM\r\nTRIGGER:-PT${s.alarm}M\r\nACTION:DISPLAY\r\nDESCRIPTION:提醒：${s.title}\r\nEND:VALARM`:'';
-  const ics=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Accessory Inv Mgmt//ZH-TW//\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:📦 配件補貨提醒\r\nX-WR-TIMEZONE:Asia/Taipei\r\nBEGIN:VTIMEZONE\r\nTZID:Asia/Taipei\r\nBEGIN:STANDARD\r\nDTSTART:19701025T020000\r\nTZNAME:CST\r\nTZOFFSETFROM:+0800\r\nTZOFFSETTO:+0800\r\nEND:STANDARD\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:${uid}\r\nDTSTAMP:${now}\r\nDTSTART;TZID=Asia/Taipei:${dtS}\r\nDTEND;TZID=Asia/Taipei:${dtE}\r\nRRULE:FREQ=WEEKLY;BYDAY=${s.day}\r\nSUMMARY:${s.title}\r\nDESCRIPTION:${desc}\r\nLOCATION:門市配件區\r\nPRIORITY:1\r\nSTATUS:CONFIRMED${alarm}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
-  saveBlob(new Blob([ics],{type:'text/calendar;charset=utf-8'}),`每${dayMap[s.day]}補貨提醒_${s.time.replace(':','')}.ics`);
-  toast(`📅 已下載 .ics（每${dayMap[s.day]} ${s.time}）`,'success');
+  var parts=s.time.split(':');var hh=parseInt(parts[0]),mm=parseInt(parts[1]);
+  function fmtDt(dt,h,m){function p(n){return String(n).padStart(2,'0')}return dt.getFullYear()+p(dt.getMonth()+1)+p(dt.getDate())+'T'+p(h)+p(m)+'00'}
+  var dtS=fmtDt(d,hh,mm),dtE=fmtDt(d,hh+1,mm);
+  var now=new Date().toISOString().replace(/[-:.]/g,'').slice(0,15)+'Z';
+  var uid='inv-reorder-'+Date.now()+'@store';
+  var urgItems=state.computed.filter(function(r){return r.level>=2});
+  var urgList=urgItems.slice(0,8).map(function(r){return r.no+' '+r.name.slice(0,18)+'('+(r.reorder||'?')+'件)'}).join('\\n');
+  var desc='【每'+dayMap[s.day]+'補貨提醒】\\n\\n請專員執行：\\n1️⃣ 開啟庫存水位提醒 Excel\\n2️⃣ 查看緊急補貨清單\\n3️⃣ 依建議補貨量發信至各廠商\\n4️⃣ 更新補貨狀態\\n'
+    +(urgItems.length?'\\n📋 待補貨品項（'+urgItems.length+'件）：\\n'+urgList+'\\n':'')
+    +'\\n📌 水位標準：🔴<14天 🟠 14-30天 🟡 30-60天 🟢>60天';
+  var alarm=s.alarm>0?'\r\nBEGIN:VALARM\r\nTRIGGER:-PT'+s.alarm+'M\r\nACTION:DISPLAY\r\nDESCRIPTION:提醒：'+s.title+'\r\nEND:VALARM':'';
+  var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Accessory Inv Mgmt//ZH-TW//\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:📦 配件補貨提醒\r\nX-WR-TIMEZONE:Asia/Taipei\r\nBEGIN:VTIMEZONE\r\nTZID:Asia/Taipei\r\nBEGIN:STANDARD\r\nDTSTART:19701025T020000\r\nTZNAME:CST\r\nTZOFFSETFROM:+0800\r\nTZOFFSETTO:+0800\r\nEND:STANDARD\r\nEND:VTIMEZONE\r\nBEGIN:VEVENT\r\nUID:'+uid+'\r\nDTSTAMP:'+now+'\r\nDTSTART;TZID=Asia/Taipei:'+dtS+'\r\nDTEND;TZID=Asia/Taipei:'+dtE+'\r\nRRULE:FREQ=WEEKLY;BYDAY='+s.day+'\r\nSUMMARY:'+s.title+'\r\nDESCRIPTION:'+desc+'\r\nLOCATION:門市配件區\r\nPRIORITY:1\r\nSTATUS:CONFIRMED'+alarm+'\r\nEND:VEVENT\r\nEND:VCALENDAR';
+  saveBlob(new Blob([ics],{type:'text/calendar;charset=utf-8'}),'每'+dayMap[s.day]+'補貨提醒_'+s.time.replace(':','')+'.ics');
+  toast('📅 已下載 .ics（每'+dayMap[s.day]+' '+s.time+'）','success');
+}
+
+// ── Reorder Email ─────────────────────────────────────────────────
+var EXCLUDE_KEYWORDS = ['燦坤', '保護貼貼服務', '貼服務'];
+function _isExcluded(r){
+  var name = (r.name||'') + (r.cat||'');
+  return EXCLUDE_KEYWORDS.some(function(k){return name.indexOf(k)>=0});
+}
+function openReorderEmail(){
+  if(!state.computed.length){toast('請先計算庫存水位','error');return}
+  var urg=state.computed.filter(function(r){return r.level>=2 && !_isExcluded(r)});
+  var sug=state.computed.filter(function(r){return r.level===1 && !_isExcluded(r)});
+  if(!urg.length&&!sug.length){toast('目前無需補貨品項','info');return}
+  var today=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'});
+  document.getElementById('email-subject').value='【配件補貨申請】'+today+'－緊急'+urg.length+'項/建議'+sug.length+'項';
+  document.getElementById('email-to').value='';
+  document.getElementById('email-intro').value='TO XX採助 :\n\nXX店庫存不足，請協助備貨，謝謝!!\n\n撥入店 : XXX XX店';
+  document.getElementById('email-outro').value='XX店 ＸＸ';
+  var tbody=document.getElementById('email-tbl-body');
+  tbody.innerHTML='';
+  function addRows(items,cls){
+    items.forEach(function(r){
+      var tr=document.createElement('tr');
+      tr.className=cls;
+      var vals=[r.no, r.name, r.stk, r.reorder||'—'];
+      vals.forEach(function(v,i){
+        var td=document.createElement('td');
+        td.contentEditable='true';
+        td.textContent=v;
+        if(i>=2)td.className='td-right';
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+  addRows(urg,'erow-urg');
+  addRows(sug,'erow-sug');
+  showModal('email-modal');
+}
+function _tblToText(){
+  var rows=document.querySelectorAll('#email-reorder-tbl tbody tr');
+  var widths=[12,30,8,8];
+  function pad(s,w){s=String(s||'');return s.length>=w?s.slice(0,w):s+' '.repeat(w-s.length)}
+  var sep='+'+widths.map(function(w){return '-'.repeat(w+2)}).join('+');
+  var hdrs=['貨號','品名','現有數量','需要數量'];
+  var hdrLine='| '+hdrs.map(function(h,i){return pad(h,widths[i])}).join(' | ')+' |';
+  var lines=[sep,hdrLine,sep];
+  rows.forEach(function(tr){
+    var cells=Array.from(tr.querySelectorAll('td')).map(function(td){return td.textContent.trim()});
+    lines.push('| '+cells.map(function(c,i){return pad(c,widths[i])}).join(' | ')+' |');
+  });
+  lines.push(sep);
+  return lines.join('\n');
+}
+function sendReorderEmail(){
+  var to=document.getElementById('email-to').value.trim();
+  var subject=document.getElementById('email-subject').value;
+  var intro=document.getElementById('email-intro').value;
+  var outro=document.getElementById('email-outro').value;
+  var body=intro+'\n\n'+_tblToText()+'\n\n'+outro;
+  var a=document.createElement('a');
+  a.href='mailto:'+to+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+function copyEmailHtml(){
+  var intro=document.getElementById('email-intro').value.replace(/\n/g,'<br>');
+  var outro=document.getElementById('email-outro').value.replace(/\n/g,'<br>');
+  var tbl=document.getElementById('email-reorder-tbl');
+  var inlineStyle='style="border-collapse:collapse;font-family:Arial,\'PingFang TC\',sans-serif;font-size:13px;width:100%"';
+  var thStyle='style="background:#f5f5f7;padding:7px 12px;border:1px solid #d1d1d6;font-size:11px;font-weight:600;text-align:left;white-space:nowrap"';
+  var tdStyle='style="padding:7px 12px;border:1px solid #e5e5ea"';
+  var urgStyle='style="padding:7px 12px;border:1px solid #e5e5ea;background:#fff0f0"';
+  var sugStyle='style="padding:7px 12px;border:1px solid #e5e5ea;background:#fff7ee"';
+  var rows=Array.from(tbl.querySelectorAll('tbody tr'));
+  var tBody='<tbody>'+rows.map(function(tr){
+    var tdSt=tr.className.indexOf('urg')>=0?urgStyle:tr.className.indexOf('sug')>=0?sugStyle:tdStyle;
+    return '<tr>'+Array.from(tr.querySelectorAll('td')).map(function(td){return'<td '+tdSt+'>'+td.textContent.trim()+'</td>'}).join('')+'</tr>';
+  }).join('')+'</tbody>';
+  var ths=Array.from(tbl.querySelectorAll('thead th')).map(function(th){return'<th '+thStyle+'>'+th.textContent+'</th>'}).join('');
+  var tblHtml='<table '+inlineStyle+'><thead><tr>'+ths+'</tr></thead>'+tBody+'</table>';
+  var html='<div style="font-family:Arial,\'PingFang TC\',sans-serif;font-size:14px;line-height:1.7"><p>'+intro+'</p>'+tblHtml+'<p>'+outro+'</p></div>';
+  if(navigator.clipboard&&window.ClipboardItem){
+    var blob=new Blob([html],{type:'text/html'});
+    navigator.clipboard.write([new ClipboardItem({'text/html':blob})]).then(function(){
+      toast('✅ 已複製 HTML，請貼入 Gmail / Outlook','success');
+    }).catch(function(){
+      navigator.clipboard.writeText(intro+'\n\n'+_tblToText()+'\n\n'+outro).then(function(){toast('✅ 已複製純文字','success')}).catch(function(){toast('複製失敗','error')});
+    });
+  } else {
+    navigator.clipboard.writeText(intro+'\n\n'+_tblToText()+'\n\n'+outro).then(function(){toast('✅ 已複製純文字','success')}).catch(function(){toast('複製失敗','error')});
+  }
 }
 
 // ── Export Excel ──────────────────────────────────────────────────
 function exportExcel(){
   if(!state.computed.length){toast('請先計算庫存水位','error');return}
-  const ms=state.sortedMonths;
-  const ml={1:'1月',2:'2月',3:'3月',4:'4月',5:'5月',6:'6月',7:'7月',8:'8月',9:'9月',10:'10月',11:'11月',12:'12月'};
-  const sl={urgent:'🔴 緊急補貨',suggest:'🟠 建議補貨',watch:'🟡 注意水位',ok:'🟢 庫存充足',none:'無銷售記錄'};
-  const hdr=['商品編號','商品名稱','品類','品牌','規格','售價','現有庫存',...ms.map(m=>ml[m]||m+'月'),'合計銷售','月均銷量','預估剩餘天數','建議補貨量','庫存狀態'];
-  const rows=state.computed.map(r=>[r.no,r.name,r.cat,r.brand,r.spec,r.px,r.stk,...ms.map(m=>r.months[m]||0),r.total,r.avg_mo,r.days!==null?r.days:'—',r.reorder!=null?r.reorder:'—',sl[r.status]]);
-  const urgRows=state.computed.filter(r=>r.level>=2).map(r=>[sl[r.status],r.no,r.name,r.cat,r.stk,r.avg_mo,r.days!==null?r.days:'—',r.reorder!=null?r.reorder:'—']);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hdr,...rows]),'庫存水位總覽');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['狀態','商品編號','商品名稱','品類','現有庫存','月均銷量','預估剩餘天數','建議補貨量'],...urgRows]),'緊急補貨清單');
-  const ts=new Date().toISOString().slice(0,10).replace(/-/g,'');
-  XLSX.writeFile(wb,`配件庫存水位提醒_${ts}.xlsx`);
+  var ms=state.sortedMonths;
+  var ml={1:'1月',2:'2月',3:'3月',4:'4月',5:'5月',6:'6月',7:'7月',8:'8月',9:'9月',10:'10月',11:'11月',12:'12月'};
+  var sl={urgent:'🔴 緊急補貨',suggest:'🟠 建議補貨',watch:'🟡 注意水位',ok:'🟢 庫存充足',none:'無銷售記錄'};
+  var hdr=['商品編號','商品名稱','品類','品牌','規格','售價','現有庫存'].concat(ms.map(function(m){return ml[m]||m+'月'})).concat(['合計銷售','月均銷量','預估剩餘天數','建議補貨量','庫存狀態']);
+  var rows=state.computed.map(function(r){return[r.no,r.name,r.cat,r.brand,r.spec,r.px,r.stk].concat(ms.map(function(m){return r.months[m]||0})).concat([r.total,r.avg_mo,r.days!==null?r.days:'—',r.reorder!=null?r.reorder:'—',sl[r.status]])});
+  var urgRows=state.computed.filter(function(r){return r.level>=2}).map(function(r){return[sl[r.status],r.no,r.name,r.cat,r.stk,r.avg_mo,r.days!==null?r.days:'—',r.reorder!=null?r.reorder:'—']});
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([hdr].concat(rows)),'庫存水位總覽');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['狀態','商品編號','商品名稱','品類','現有庫存','月均銷量','預估剩餘天數','建議補貨量']].concat(urgRows)),'緊急補貨清單');
+  var ts=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  XLSX.writeFile(wb,'配件庫存水位提醒_'+ts+'.xlsx');
   toast('📊 Excel 已下載','success');
 }
 
 // ── Changelog ─────────────────────────────────────────────────────
 function renderChangelog(){
-  const el=document.getElementById('changelog'),list=document.getElementById('changelog-list');
+  var el=document.getElementById('changelog'),list=document.getElementById('changelog-list');
   if(!changelog.length){el.style.display='none';return}
   el.style.display='block';
-  list.innerHTML=changelog.slice(0,15).map(e=>`<div class="cl-entry"><span class="cl-time">${e.time}</span><span>${e.text}</span></div>`).join('');
+  list.innerHTML=changelog.slice(0,15).map(function(e){return'<div class="cl-entry"><span class="cl-time">'+e.time+'</span><span>'+e.text+'</span></div>'}).join('');
 }
 
 // ── Session ───────────────────────────────────────────────────────
@@ -586,17 +752,19 @@ function saveSession(){
 }
 function loadLastSession(){
   try{
-    const raw=localStorage.getItem('inv_session_v2');
+    var raw=localStorage.getItem('inv_session_v2');
     if(!raw){toast('沒有找到上次資料','error');return}
-    const p=JSON.parse(raw);
-    state.computed=p.computed;state.filtered=[...p.computed];state.sortedMonths=p.sortedMonths||[];
-    const cats=new Set(p.computed.map(r=>r.cat).filter(Boolean));
-    const catSel=document.getElementById('filter-cat');
+    var p=JSON.parse(raw);
+    state.computed=p.computed;state.filtered=p.computed.slice();state.sortedMonths=p.sortedMonths||[];
+    var cats=new Set(p.computed.map(function(r){return r.cat}).filter(Boolean));
+    var catSel=document.getElementById('filter-cat');
     catSel.innerHTML='<option value="">全部品類</option>';
-    Array.from(cats).sort().forEach(c=>{catSel.innerHTML+=`<option value="${esc(c)}">${esc(c)}</option>`});
+    Array.from(cats).sort().forEach(function(c){catSel.innerHTML+='<option value="'+esc(c)+'">'+esc(c)+'</option>'});
     document.getElementById('last-update').textContent='載入：'+new Date(p.ts).toLocaleString('zh-TW');
     updateCards();renderTable();
-    document.getElementById('btn-xlsx').disabled=false;document.getElementById('btn-ics').disabled=false;
+    document.getElementById('btn-xlsx').disabled=false;
+    document.getElementById('btn-ics').disabled=false;
+    document.getElementById('btn-email').disabled=false;
     toast('✅ 已載入上次工作階段','success');
   }catch(e){toast('載入失敗：'+e.message,'error')}
 }
@@ -604,30 +772,31 @@ function loadLastSession(){
 // ── Modal ─────────────────────────────────────────────────────────
 function showModal(id){document.getElementById(id).classList.add('show')}
 function closeModal(id){document.getElementById(id).classList.remove('show')}
-document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)})});
+document.querySelectorAll('.modal-overlay').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)closeModal(m.id)})});
 
 // ── Toast ─────────────────────────────────────────────────────────
-function toast(msg,type=''){
-  const el=document.createElement('div');el.className='toast '+type;el.textContent=msg;
+function toast(msg,type){
+  type=type||'';
+  var el=document.createElement('div');el.className='toast '+type;el.textContent=msg;
   document.getElementById('toast-container').prepend(el);
-  setTimeout(()=>el.remove(),3500);
+  setTimeout(function(){el.remove()},3500);
 }
 
 // ── Utils ─────────────────────────────────────────────────────────
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function saveBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function saveBlob(blob,name){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
 
 // ── Init ──────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded',()=>{
+window.addEventListener('DOMContentLoaded',function(){
   try{
-    const raw=localStorage.getItem('inv_session_v2');
+    var raw=localStorage.getItem('inv_session_v2');
     if(raw){
-      const p=JSON.parse(raw);
+      var p=JSON.parse(raw);
       document.getElementById('last-update').textContent='上次儲存：'+new Date(p.ts).toLocaleString('zh-TW');
-      document.getElementById('empty-state').innerHTML=`
-        <div class="es-icon">💾</div><h4>找到上次工作階段</h4>
-        <p style="margin-bottom:12px">儲存於 ${new Date(p.ts).toLocaleString('zh-TW')}</p>
-        <button class="btn btn-primary" onclick="loadLastSession()">🔄 載入上次資料</button>`;
+      document.getElementById('empty-state').innerHTML=
+        '<div class="es-icon">💾</div><h4>找到上次工作階段</h4>'
+        +'<p style="margin-bottom:12px">儲存於 '+new Date(p.ts).toLocaleString('zh-TW')+'</p>'
+        +'<button class="btn btn-primary" onclick="loadLastSession()">🔄 載入上次資料</button>';
     }
   }catch(e){}
 });
