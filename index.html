@@ -341,8 +341,37 @@ function processFile(file, zone) {
     try {
       const wb = XLSX.read(e.target.result, {type:'array', raw:false, cellText:true, dateNF:'YYYY/MM/DD', codepage:950});
       const sh = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(sh, {raw:false, defval:''});
+      let rows = XLSX.utils.sheet_to_json(sh, {raw:false, defval:''});
       if(!rows.length) throw new Error('檔案為空或無法讀取');
+
+      // 偵測燦坤 POS 無標題列格式：若欄位名稱中找不到任何英文關鍵字，視為無標題
+      const sampleKeys = Object.keys(rows[0] || {});
+      const knownKws = ['item','comp','qty','no','name','date','stk','sale'];
+      const hasHeaders = sampleKeys.some(k => knownKws.some(kw => k.trim().toLowerCase().includes(kw)));
+      if (!hasHeaders) {
+        // 以陣列模式重新讀取（含第0列原始資料），套用燦坤 POS 固定欄位位置
+        const raw = XLSX.utils.sheet_to_json(sh, {raw:false, defval:'', header:1});
+        if (zone === 'sales') {
+          rows = raw.map(r => ({
+            item_item_no:  String(r[7]  || '').trim(),
+            item_sale_qty: r[12] || 0,
+            item_date:     String(r[3]  || '').trim(),
+            it01_item_nam: String(r[9]  || '').trim(),
+          })).filter(r => r.item_item_no);
+        } else {
+          rows = raw.map(r => ({
+            comp_item_no:  String(r[10] || '').trim(),
+            comp_item_nam: String(r[11] || '').trim(),
+            comp_desc_c:   String(r[7]  || '').trim(),
+            comp_mk_dec:   String(r[9]  || '').trim(),
+            comp_spec:     String(r[13] || '').trim(),
+            comp_sale_px:  r[27] || '',
+            comp_stk_qty:  r[14] || 0,
+          })).filter(r => r.comp_item_no);
+        }
+        if (!rows.length) throw new Error('無法辨識欄位格式，偵測到欄位：'+sampleKeys.slice(0,6).join(', '));
+      }
+
       if(zone==='sales'){
         state.salesRows=rows;
         document.getElementById('zone-sales').classList.add('loaded');
