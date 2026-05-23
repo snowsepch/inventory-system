@@ -125,6 +125,11 @@ tbody td{padding:7px 10px;vertical-align:middle}
 .email-tbl .erow-urg td{background:#FFF0F0}
 .email-tbl .erow-sug td{background:#FFF7EE}
 .email-tbl .td-right{text-align:right}
+.email-tbl .th-action,.email-tbl .td-action{width:40px;text-align:center;padding:4px}
+.email-row-del{background:transparent;border:none;color:var(--red);font-size:18px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:4px;transition:background .15s}
+.email-row-del:hover{background:#FFE5E3}
+.email-add-row{display:inline-flex;align-items:center;gap:4px;background:var(--blue-light);color:var(--blue);border:1px dashed var(--blue);border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;margin-top:6px}
+.email-add-row:hover{background:#D8E6FB}
 .eml-ta{width:100%;font-size:13px;font-family:-apple-system,'PingFang TC','Helvetica Neue',sans-serif;resize:vertical;border:1px solid var(--border);border-radius:8px;padding:9px 12px;background:var(--surface2);color:var(--text);line-height:1.6;cursor:text;outline:none}
 .eml-ta:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,113,227,.15)}
 </style>
@@ -297,11 +302,13 @@ tbody td{padding:7px 10px;vertical-align:middle}
               <th>品名</th>
               <th style="text-align:right">現有數量</th>
               <th style="text-align:right">需要數量</th>
+              <th class="th-action" title="刪除"></th>
             </tr>
           </thead>
           <tbody id="email-tbl-body"></tbody>
         </table>
       </div>
+      <button type="button" class="email-add-row" onclick="addEmptyEmailRow()">＋ 新增列</button>
       <div class="form-row">
         <label>結尾文字</label>
         <textarea id="email-outro" rows="2" class="eml-ta"></textarea>
@@ -689,12 +696,39 @@ function openReorderEmail(){
         if(i>=2)td.className='td-right';
         tr.appendChild(td);
       });
+      tr.appendChild(_makeDelTd());
       tbody.appendChild(tr);
     });
   }
   addRows(urg,'erow-urg');
   addRows(sug,'erow-sug');
   showModal('email-modal');
+}
+function _makeDelTd(){
+  var td=document.createElement('td');
+  td.className='td-action';
+  var btn=document.createElement('button');
+  btn.type='button';
+  btn.className='email-row-del';
+  btn.title='刪除此列';
+  btn.textContent='×';
+  btn.onclick=function(){this.closest('tr').remove()};
+  td.appendChild(btn);
+  return td;
+}
+function addEmptyEmailRow(){
+  var tbody=document.getElementById('email-tbl-body');
+  var tr=document.createElement('tr');
+  for(var i=0;i<4;i++){
+    var td=document.createElement('td');
+    td.contentEditable='true';
+    td.textContent='';
+    if(i>=2)td.className='td-right';
+    tr.appendChild(td);
+  }
+  tr.appendChild(_makeDelTd());
+  tbody.appendChild(tr);
+  tr.querySelector('td').focus();
 }
 function _tblToText(){
   var rows=document.querySelectorAll('#email-reorder-tbl tbody tr');
@@ -705,7 +739,8 @@ function _tblToText(){
   var hdrLine='| '+hdrs.map(function(h,i){return pad(h,widths[i])}).join(' | ')+' |';
   var lines=[sep,hdrLine,sep];
   rows.forEach(function(tr){
-    var cells=Array.from(tr.querySelectorAll('td')).map(function(td){return td.textContent.trim()});
+    var cells=Array.from(tr.querySelectorAll('td:not(.td-action)')).map(function(td){return td.textContent.trim()});
+    if(cells.every(function(c){return !c}))return;
     lines.push('| '+cells.map(function(c,i){return pad(c,widths[i])}).join(' | ')+' |');
   });
   lines.push(sep);
@@ -734,10 +769,12 @@ function copyEmailHtml(){
   var sugStyle='style="padding:7px 12px;border:1px solid #e5e5ea;background:#fff7ee"';
   var rows=Array.from(tbl.querySelectorAll('tbody tr'));
   var tBody='<tbody>'+rows.map(function(tr){
+    var dataTds=Array.from(tr.querySelectorAll('td:not(.td-action)'));
+    if(dataTds.every(function(td){return !td.textContent.trim()}))return '';
     var tdSt=tr.className.indexOf('urg')>=0?urgStyle:tr.className.indexOf('sug')>=0?sugStyle:tdStyle;
-    return '<tr>'+Array.from(tr.querySelectorAll('td')).map(function(td){return'<td '+tdSt+'>'+td.textContent.trim()+'</td>'}).join('')+'</tr>';
+    return '<tr>'+dataTds.map(function(td){return'<td '+tdSt+'>'+td.textContent.trim()+'</td>'}).join('')+'</tr>';
   }).join('')+'</tbody>';
-  var ths=Array.from(tbl.querySelectorAll('thead th')).map(function(th){return'<th '+thStyle+'>'+th.textContent+'</th>'}).join('');
+  var ths=Array.from(tbl.querySelectorAll('thead th:not(.th-action)')).map(function(th){return'<th '+thStyle+'>'+th.textContent+'</th>'}).join('');
   var tblHtml='<table '+inlineStyle+'><thead><tr>'+ths+'</tr></thead>'+tBody+'</table>';
   var html='<div style="font-family:Arial,\'PingFang TC\',sans-serif;font-size:14px;line-height:1.7"><p>'+intro+'</p>'+tblHtml+'<p>'+outro+'</p></div>';
   if(navigator.clipboard&&window.ClipboardItem){
