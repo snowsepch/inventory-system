@@ -560,9 +560,8 @@ function renderTable() {
     +'<th onclick="sortBy(\'cat\')">品類 ↕</th>'
     +'<th class="col-num" onclick="sortBy(\'stk\')">現有庫存 ↕</th>';
   for(var i=0;i<ms.length;i++)h+='<th class="col-num" onclick="sortBy(\'m'+ms[i]+'\')">'+(ml[ms[i]]||ms[i]+'月')+' ↕</th>';
-  h+='<th class="col-num" onclick="sortBy(\'total\')">合計 ↕</th>'
+  h+='<th class="col-num" onclick="sortBy(\'total\')">三個月合計 ↕</th>'
     +'<th class="col-num" onclick="sortBy(\'avg_mo\')">月均 ↕</th>'
-    +'<th class="col-num" onclick="sortBy(\'days\')">剩餘天 ↕</th>'
     +'<th class="col-num" onclick="sortBy(\'reorder\')">補貨量 ↕</th>'
     +'<th class="col-center" onclick="sortBy(\'status\')">狀態 ↕</th>'
     +'</tr></thead><tbody>';
@@ -575,10 +574,9 @@ function renderTable() {
       +'<td class="col-center text-muted">'+esc(r.cat)+'</td>'
       +'<td class="col-num"><input type="number" class="stock-edit" value="'+r.stk+'" step="1"'
       +' onchange="editStock(\''+r.no.replace(/'/g,"\\'")+"',this.value)\" onclick=\"this.select()\"></td>";
-    for(var j=0;j<ms.length;j++){var v=r.months[ms[j]]||0;h+='<td class="col-num '+(v===0?'text-muted':'')+'>'+(v===0?'—':v)+'</td>'}
+    for(var j=0;j<ms.length;j++){var v=r.months[ms[j]]||0;h+='<td class="col-num'+(v===0?' text-muted':'')+'">'+(v===0?'—':v)+'</td>'}
     h+='<td class="col-num">'+(r.total===0?'<span class="text-muted">—</span>':r.total)+'</td>'
       +'<td class="col-num">'+(r.avg_mo===0?'<span class="text-muted">—</span>':r.avg_mo)+'</td>'
-      +'<td class="col-num days-cell">'+daysHtml(r.days,r.status)+'</td>'
       +'<td class="col-num reorder-cell">'+(r.reorder!=null?r.reorder:'<span class="text-muted">—</span>')+'</td>'
       +'<td class="col-center status-cell">'+badge(r.status)+'</td></tr>';
   }
